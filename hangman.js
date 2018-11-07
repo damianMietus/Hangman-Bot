@@ -1,6 +1,6 @@
 const Discord = require('Discord.js');
 const bot = new Discord.Client();
-const TOKEN = '/* goes here */'
+const TOKEN = 'Token goes here'
 const util = require('./util.json');
 
 var prefix = '!';
@@ -13,6 +13,7 @@ var topics = ["", "Countries", "Cities", "Food"];
 
 var botOn = false;
 var gameOn = false;
+var nonAlphaFlag = false;
 
 // Hangman Game Variables
 var playWord = "";
@@ -26,16 +27,19 @@ var helperBoard = new Discord.RichEmbed();
 var gameBoard = new Discord.RichEmbed();
 var hangASCII = [
 "+---------+\n |                |\n                  |\n                  |\n                  |\n                  |\n                  |\n                  |\n===============\n",
-"+---------+\n |                |\n O              |\n                  |\n                  |\n                  |\n                  |\n                  |\n===============\n",
-"+---------+\n |                |\n O              |\n  |               |\n                  |\n                  |\n                  |\n                  |\n===============\n",
-"+---------+\n |                |\n O              |\n/|               |\n                  |\n                  |\n                  |\n                  |\n===============\n",
-"+---------+\n |                |\n O              |\n/|\\            |\n                  |\n                  |\n                  |\n                  |\n===============\n",
-"+---------+\n |                |\n O              |\n/|\\            |\n/                |\n                  |\n                  |\n                  |\n===============\n",
-"+---------+\n |                |\n O              |\n/|\\            |\n/ \\            |\n                  |\n                  |\n                  |\n===============\n"
+"+---------+\n |                |\nO               |\n                  |\n                  |\n                  |\n                  |\n                  |\n===============\n",
+"+---------+\n |                |\nO               |\n |                |\n                  |\n                  |\n                  |\n                  |\n===============\n",
+"+---------+\n  |               |\n O              |\n/|               |\n                  |\n                  |\n                  |\n                  |\n===============\n",
+"+---------+\n  |               |\n O              |\n/|\\            |\n                  |\n                  |\n                  |\n                  |\n===============\n",
+"+---------+\n  |               |\n O              |\n/|\\            |\n/                |\n                  |\n                  |\n                  |\n===============\n",
+"+---------+\n  |               |\n O              |\n/|\\            |\n/ \\            |\n                  |\n                  |\n                  |\n===============\n"
 ]
+var healthCode = ["0022FF", "00EFFF", "2BFF00", "F7FF00", "FF7700", "FF0000", "000000"]
 
 console.log("I am on!");
 
+var bm ="";
+var correctAnswer = "";
 var mainMenu = new Discord.RichEmbed()
     .setTitle("Hangman Bot")
     .setDescription("Please select a topic by typing in '!topic <number>' ")
@@ -43,6 +47,7 @@ var mainMenu = new Discord.RichEmbed()
     .addField(reaction_numbers[2]+" "+topics[2], "-----------")
     .addField(reaction_numbers[3]+" "+topics[3], "-----------")
     .setThumbnail("https://cdn3.iconfinder.com/data/icons/brain-games/128/Hangman-Game.png")
+    .setColor('1BB2F3')
 
 
 bot.on('message', function(message) {
@@ -55,9 +60,8 @@ bot.on('message', function(message) {
             message.channel.sendEmbed(mainMenu)
             botOn = true;
         } else {
-          const badManner = ["loser!", "idiot!", "bozo!"];
-          var rand = Math.floor(Math.random() * 3);
-            message.reply("The game is already on, "+badManner[rand])
+            bm = badManners();
+            message.reply("The game is already on, "+bm)
                 .then(msg => {
                     msg.delete(8000)
                 })
@@ -66,10 +70,13 @@ bot.on('message', function(message) {
 
     //Take guesses here
     if (gameOn === true){
-        // Check if it is alhpabetical, two characaters long, and starts with prefix
-        if (alphaCheck(msg.charAt(1)) !== null && msg.length === 2 && msg.charAt(0) === prefix){
+
+       // console.log("msg is:"+msg.content+"| length: "+msg.length+"| charat(8): "+msg.charAt(7));
+
+        // Check if it is alhpabetical, eight characaters long, is not !solve, and starts with prefix
+        if (msg.includes("guess") && alphaCheck(msg.charAt(7)) !== null && msg.length === 8 && msg.charAt(0) === prefix && !msg.includes("!solve")){
             console.log('Yup, its legal!');
-            var guess = msg.charAt(1);
+            var guess = msg.charAt(7);
             //Check if duplicate
             var doubleFlag = checkIfGuessed(guessedList, guess);
             if (doubleFlag === true){
@@ -93,17 +100,29 @@ bot.on('message', function(message) {
                     gameBoard
                         .setTitle(hangASCII[damage])
                         .setFooter(boardWord)
+                        .setColor(healthCode[damage])
                     message.channel.sendEmbed(gameBoard);
 
-                    helperBoard
-                        .setTitle(helperTopic)
-                        .setFooter(missList)
-                    message.channel.sendEmbed(helperBoard);
+
 
                     //Check if winner
                     if (boardWord === playWord){
                         message.channel.send("Conglaturation, you're winner!");
+
+                        helperBoard
+                            .setTitle("Conglaturation!")
+                            .setFooter("You're Winner!")
+                            .setColor(healthCode[damage])
+                        message.channel.sendEmbed(helperBoard);
+
                         resetGame();
+                    } else {
+                        //Print normally
+                        helperBoard
+                            .setTitle(helperTopic)
+                            .setFooter(missList)
+                            .setColor(healthCode[damage])
+                        message.channel.sendEmbed(helperBoard);
                     }
 
                 } else {
@@ -115,30 +134,128 @@ bot.on('message', function(message) {
                     gameBoard
                         .setTitle(hangASCII[damage])
                         .setFooter(boardWord)
+                        .setColor(healthCode[damage])
                     message.channel.sendEmbed(gameBoard);
 
+                    // If dead, print "You're Loser" screen and reset game
+                    if (damage === 6){
+                        //message.channel.send("You're Loser!");
+
+                        correctAnswer = "The correct answer was: "+playWord;
+
+                        helperBoard
+                            .setTitle("You're Loser!")
+                            .setFooter(correctAnswer)
+                            .setColor(healthCode[damage])
+                        message.channel.sendEmbed(helperBoard);
+
+                        console.log('RESET THE GAME!');
+                        resetGame();
+                    } else {
+                    // Not dead, print normal helper board
                     helperBoard
                         .setTitle(helperTopic)
                         .setFooter(missList)
+                        .setColor(healthCode[damage])
                     message.channel.sendEmbed(helperBoard);
-
-                    if (damage === 6){
-                        message.channel.send("You're Loser!");
-                        console.log('RESET THE GAME!');
-                        resetGame();
                     }
 
                 }
 
             }
 
-        } else if (msg.includes("solve") && msg.charAt(0) === prefix && msg.charAt(msg.length) == "'"){
+        } else if (msg.includes("solve") && msg.charAt(0) === prefix && msg.charAt(msg.length-1) == "'"){
             console.log('This is a string solve. Here is msg: '+msg)
+            //Make sure there are only two quotes in the solve string
+            if (findTwoQuotes(msg) === true){
+                var solv = msg.split("!solve ");
+                solv = solv + '';
+                solv = solv.split("'")[1];
+                console.log("Solv ="+solv);
 
-            var solv = msg.split("!solve ");
-            solv = solv + '';
-            solv = solv.split("'")[1];
-            console.log("Solv ="+solv);
+                //Check if guess is only alphabetical
+                var c = 0;
+                nonAlphaFlag = true;
+                for (c = 0; c < solv.length; c++){
+                    if (solv.charAt(c) === null){
+                        nonAlphaFlag = false;
+                    }
+                }
+                //It passed. Proceed to check
+                if (nonAlphaFlag === true){
+                    //Continue by checking length of solv + length of command + the two quotes
+                    // This will make sure it only accepts valid input <!solve ''> this ahs 9 chars
+                    if ((solv.length + 9) === msg.length){
+
+                        //Check if winner
+                        if (solv === playWord){
+                            //message.channel.send("Conglaturation, you're winner!");
+                            boardWord = playWord;
+
+                            gameBoard
+                                .setTitle(hangASCII[damage])
+                                .setFooter(boardWord)
+                                .setColor(healthCode[damage])
+                            message.channel.sendEmbed(gameBoard);
+    
+                            helperBoard
+                                .setTitle("Conglaturation!")
+                                .setFooter("You're Winner!")
+                                .setColor(healthCode[damage])
+                            message.channel.sendEmbed(helperBoard);
+
+                            resetGame();
+                        } else {
+                            // Missed! Deduct health and display board
+                            damage = damage + 1;
+                            missList = missList + " '" + solv+"'";
+
+                            //Print the board
+                            gameBoard
+                                .setTitle(hangASCII[damage])
+                                .setFooter(boardWord)
+                                .setColor(healthCode[damage])
+                            message.channel.sendEmbed(gameBoard);
+
+                            if (damage === 6){
+
+                                correctAnswer = "The correct answer was: "+playWord;
+
+                                helperBoard
+                                    .setTitle("You're Loser!")
+                                    .setFooter(correctAnswer)
+                                    .setColor(healthCode[damage])
+                                message.channel.sendEmbed(helperBoard);
+
+                                message.channel.send("You're Loser!");
+                                console.log('RESET THE GAME!');
+                                resetGame();
+                            } else {
+                            helperBoard
+                                .setTitle(helperTopic)
+                                .setFooter(missList)
+                                .setColor(healthCode[damage])
+                            message.channel.sendEmbed(helperBoard);
+                            }
+                        }
+                    }
+
+
+                    //console.log("stringLen = "+msg.length+"Its this string: "+msg);
+                    //console.log("SolvLen = "+solv.length);
+
+                } else {
+                    //Invalid input: non Alpha solve    
+                }
+
+
+
+            } else {
+                //Invalid input: Unrecognized input
+            }
+
+
+            
         }
         
 
@@ -171,11 +288,13 @@ bot.on('message', function(message) {
                 .setTitle(hangASCII[damage])
                 .setColor('GREEN')
                 .setFooter(boardWord)
+                .setColor(healthCode[damage])
             message.channel.sendEmbed(gameBoard);
 
             helperBoard
                 .setTitle(helperTopic)
                 .setFooter(missList)
+                .setColor(healthCode[damage])
             message.channel.sendEmbed(helperBoard);
         }
     }
@@ -211,6 +330,28 @@ function resetGame(){
 
     missList = "Missed Guesses: ";
     helperTopic = "Topic: ";
+}
+
+function findTwoQuotes(string){
+    var j;
+    var quotesFound = 0;
+    for (j = 0; j < string.length; j++){
+        if (string.charAt(j) === "'"){
+            quotesFound = quotesFound+1;
+        }
+    }
+
+    if (quotesFound === 2){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function badManners(){
+    const badManner = ["loser!", "idiot!", "bozo!", "moron!", "knucklehead!", "Einstein!", "nincompoop!", "nitwit!", "fool!"];
+    var rand = Math.floor(Math.random() * 9);
+    return badManner[rand];
 }
 //All functions below this comment were repurposed from my Oatmeal Bot
 function generateBoardWord(gameWord){
