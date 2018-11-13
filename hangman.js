@@ -9,7 +9,8 @@ var prefix = '!';
 *  Special thanks to Varion for providing this list of unicode friendly number emojis */
 var reaction_numbers = ["\u0030\u20E3","\u0031\u20E3","\u0032\u20E3","\u0033\u20E3","\u0034\u20E3","\u0035\u20E3", "\u0036\u20E3","\u0037\u20E3","\u0038\u20E3","\u0039\u20E3"]
 
-var topics = ["", "Countries", "Cities", "Food"];
+var topics = ["", "Countries", "Capital Cities", "Food", "Movies", "Bands",
+ "Animals", "Computers", "Compound Words", "Pokémon"];
 
 var botOn = false;
 var gameOn = false;
@@ -20,6 +21,7 @@ var playWord = "";
 var boardWord = "";
 var damage = 0;
 var guessedList = "";
+var solvedList = []
 
 var missList = "Missed Guesses: ";
 var helperTopic = "Topic: ";
@@ -41,11 +43,18 @@ console.log("I am on!");
 var bm ="";
 var correctAnswer = "";
 var mainMenu = new Discord.RichEmbed()
-    .setTitle("Hangman Bot")
+    .setTitle("Topic Select")
     .setDescription("Please select a topic by typing in '!topic <number>' ")
     .addField(reaction_numbers[1]+" "+topics[1], "-----------")
     .addField(reaction_numbers[2]+" "+topics[2], "-----------")
     .addField(reaction_numbers[3]+" "+topics[3], "-----------")
+    .addField(reaction_numbers[4]+" "+topics[4], "-----------")
+    .addField(reaction_numbers[5]+" "+topics[5], "-----------")
+    .addField(reaction_numbers[6]+" "+topics[6], "-----------")
+    .addField(reaction_numbers[7]+" "+topics[7], "-----------")
+    .addField(reaction_numbers[8]+" "+topics[8], "-----------")
+    .addField("⭕ Dynamic Topics ⭕", "These topics contain subcategories and are accessed by:\n '!topic <name><number>'\nHaving no number will merge all categories")
+    .addField("⭕ Pokemon", "!poke1")
     .setThumbnail("https://cdn3.iconfinder.com/data/icons/brain-games/128/Hangman-Game.png")
     .setColor('1BB2F3')
 
@@ -80,7 +89,12 @@ bot.on('message', function(message) {
             //Check if duplicate
             var doubleFlag = checkIfGuessed(guessedList, guess);
             if (doubleFlag === true){
-                console.log('Already been guessed.');
+                //console.log('Already been guessed.');
+                bm = badManners();
+                message.reply("That has been guessed, "+bm)
+                    .then(msg => {
+                        msg.delete(8000)
+                    })                
             } else {
                 //Check if it exists in string
                 var l;
@@ -107,7 +121,7 @@ bot.on('message', function(message) {
 
                     //Check if winner
                     if (boardWord === playWord){
-                        message.channel.send("Conglaturation, you're winner!");
+                        //message.channel.send("Conglaturation, you're winner!");
 
                         helperBoard
                             .setTitle("Conglaturation!")
@@ -173,6 +187,8 @@ bot.on('message', function(message) {
                 solv = solv.split("'")[1];
                 console.log("Solv ="+solv);
 
+                alreadyGuessed = false;
+
                 //Check if guess is only alphabetical
                 var c = 0;
                 nonAlphaFlag = true;
@@ -181,8 +197,16 @@ bot.on('message', function(message) {
                         nonAlphaFlag = false;
                     }
                 }
+                
+                
+                for (c = 0; c < solvedList.length; c++){
+                    console.log("guesslist at c = "+solvedList[c])
+                    if (solv == solvedList[c]){
+                        alreadyGuessed = true;
+                    }
+                }
                 //It passed. Proceed to check
-                if (nonAlphaFlag === true){
+                if (nonAlphaFlag === true && alreadyGuessed === false){
                     //Continue by checking length of solv + length of command + the two quotes
                     // This will make sure it only accepts valid input <!solve ''> this ahs 9 chars
                     if ((solv.length + 9) === msg.length){
@@ -209,6 +233,7 @@ bot.on('message', function(message) {
                             // Missed! Deduct health and display board
                             damage = damage + 1;
                             missList = missList + " '" + solv+"'";
+                            solvedList.push(solv)
 
                             //Print the board
                             gameBoard
@@ -245,7 +270,23 @@ bot.on('message', function(message) {
                     //console.log("SolvLen = "+solv.length);
 
                 } else {
-                    //Invalid input: non Alpha solve    
+                    //Invalid input: Already guessed
+                    if (alreadyGuessed === true){
+                        bm = badManners();
+                        message.reply("This has been guessed, "+bm)
+                            .then(msg => {
+                                msg.delete(8000)
+                            })
+                    } else {
+                    //Invalid input: non Alpha solve
+                    bm = badManners();
+                    message.reply("Guesses should only contain alphabetical characters, "+bm)
+                        .then(msg => {
+                            msg.delete(8000)
+                        })
+                    }
+                    
+                        
                 }
 
 
@@ -273,13 +314,62 @@ bot.on('message', function(message) {
             gameOn = true;
 
             helperTopic = helperTopic + topics[1];
-
-
         } else if ((msg == prefix+'topic 2') || (msg == prefix+'topic two') || (msg == prefix+'topic '+reaction_numbers[2])){
             console.log('Playing Cities')
+            playWord = getPlayWord(util.capitalcity, util.numCities);
+            console.log(playWord);
+            gameOn = true;
+
+            helperTopic = helperTopic + topics[2];
         } else if ((msg == prefix+'topic 3') || (msg == prefix+'topic three') || (msg == prefix+'topic '+reaction_numbers[3])){
             console.log('Playing Foods')
+            playWord = getPlayWord(util.food, util.numFoods);
+            console.log(playWord);
+            gameOn = true;
+
+            helperTopic = helperTopic + topics[3];
+        } else if ((msg == prefix+'topic 4') || (msg == prefix+'topic four') || (msg == prefix+'topic '+reaction_numbers[4])){
+            console.log('Playing Movies')
+            playWord = getPlayWord(util.movie, util.numMovies);
+            console.log(playWord);
+            gameOn = true;
+
+            helperTopic = helperTopic + topics[4];
+        } else if ((msg == prefix+'topic 5') || (msg == prefix+'topic five') || (msg == prefix+'topic '+reaction_numbers[5])){
+            console.log('Playing Bands')
+            playWord = getPlayWord(util.band, util.numBands);
+            console.log(playWord);
+            gameOn = true;
+
+            helperTopic = helperTopic + topics[5];
+        } else if ((msg == prefix+'topic 6') || (msg == prefix+'topic six') || (msg == prefix+'topic '+reaction_numbers[6])){
+            console.log('Playing Animals')
+            playWord = getPlayWord(util.animal, util.numAnimals);
+            console.log(playWord);
+            gameOn = true;
+
+            helperTopic = helperTopic + topics[6];
+        } else if ((msg == prefix+'topic 7') || (msg == prefix+'topic seven') || (msg == prefix+'topic '+reaction_numbers[7])){
+            console.log('Playing Computers')
+            playWord = getPlayWord(util.computer, util.numComputers);
+            console.log(playWord);
+            gameOn = true;
+
+            helperTopic = helperTopic + topics[7];
+        } else if ((msg == prefix+'topic 8') || (msg == prefix+'topic eight') || (msg == prefix+'topic '+reaction_numbers[8])){
+            console.log('Playing Compound Word')
+            playWord = getPlayWord(util.compoundWord, util.numComputers);
+            console.log(playWord);
+            gameOn = true;
+
+            helperTopic = helperTopic + topics[8];
+        // Dynamic Topic
+        } else if (msg == prefix+'topic pokemon'){
+            if (msg == prefix+'topic pokemon'+'1' || msg == prefix+'topic pokemon'+'one' || prefix+'topic pokemon'+reaction_numbers[8]){
+                
+            }
         }
+
         //generate the board
         if (gameOn === true){
 
@@ -327,6 +417,7 @@ function resetGame(){
     boardWord = "";
     damage = 0;
     guessedList = "";
+    guessedList = []
 
     missList = "Missed Guesses: ";
     helperTopic = "Topic: ";
