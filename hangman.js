@@ -15,6 +15,7 @@ var topics = ["", "Countries", "Capital Cities", "Food", "Movies", "Bands",
 var botOn = false;
 var gameOn = false;
 var nonAlphaFlag = false;
+var randNum;
 
 // Hangman Game Variables
 var playWord = "";
@@ -53,8 +54,8 @@ var mainMenu = new Discord.RichEmbed()
     .addField(reaction_numbers[6]+" "+topics[6], "-----------")
     .addField(reaction_numbers[7]+" "+topics[7], "-----------")
     .addField(reaction_numbers[8]+" "+topics[8], "-----------")
-    .addField("⭕ Dynamic Topics ⭕", "These topics contain subcategories and are accessed by:\n '!topic <name><number>'\nHaving no number will merge all categories")
-    .addField("⭕ Pokemon", "!poke1")
+    .addField("⭕ Dynamic Topics ⭕", "These topics contain subcategories and are accessed by:\n '!topic <subcategory>")
+    .addField("⭕ Pokemon", "Kanto, Johto, Hoenn, Sinnoh, Unova, Kalos, Alola ")
     .setThumbnail("https://cdn3.iconfinder.com/data/icons/brain-games/128/Hangman-Game.png")
     .setColor('1BB2F3')
 
@@ -364,9 +365,66 @@ bot.on('message', function(message) {
 
             helperTopic = helperTopic + topics[8];
         // Dynamic Topic
-        } else if (msg == prefix+'topic pokemon'){
-            if (msg == prefix+'topic pokemon'+'1' || msg == prefix+'topic pokemon'+'one' || prefix+'topic pokemon'+reaction_numbers[8]){
-                
+        } else if (msg.startsWith(prefix+"topic")){
+            if ((msg == "!topic pokemon kanto") || (msg == "!topic kanto")){
+                 randNum = Math.floor(Math.random() * 151);
+                 playWord = util.pokemon[randNum]
+                 console.log(playWord);
+                 gameOn = true;
+     
+                 helperTopic = helperTopic + topics[9]+" (Kanto)";
+            } else if ((msg == "!topic pokemon johto") || (msg == "!topic johto")){
+                 randNum = Math.floor(Math.random() * 100) + 151;
+                 playWord = util.pokemon[randNum]
+                 console.log(playWord);
+                 gameOn = true;
+     
+                 helperTopic = helperTopic + topics[9]+" (Johto)";
+            } else if ((msg == "!topic pokemon hoenn") || (msg == "!topic hoenn")){
+                randNum = Math.floor(Math.random() * 136) + 251;
+                playWord = util.pokemon[randNum]
+                 console.log(playWord);
+                 gameOn = true;
+     
+                 helperTopic = helperTopic + topics[9]+" (Hoenn)";
+            } else if ((msg == "!topic pokemon sinnoh") || (msg == "!topic sinnoh")){
+                 randNum = Math.floor(Math.random() * 107) + 386;
+                 playWord = util.pokemon[randNum]
+                 console.log(playWord);
+                 gameOn = true;
+     
+                 helperTopic = helperTopic + topics[9]+" (Sinnoh)";
+            } else if ((msg == "!topic pokemon unova") || (msg == "!topic unova")){
+                randNum = Math.floor(Math.random() * 156) + 492;                 
+                playWord = util.pokemon[randNum]
+                console.log(playWord);
+                gameOn = true;
+     
+                 helperTopic = helperTopic + topics[9]+" (Unova)";
+            } else if ((msg == "!topic pokemon kalos") || (msg == "!topic kalos")){
+                console.log(util.pokemon[720]+" and "+util.pokemon[721])
+                randNum = Math.floor(Math.random() * 72) +649;                 
+                playWord = util.pokemon[randNum]
+                console.log(playWord);
+                gameOn = true;
+     
+                 helperTopic = helperTopic + topics[9]+" (Kalos)";
+            } else if ((msg == "!topic pokemon alola") || (msg == "!topic alola")){
+                console.log(util.pokemon[806]+"Is pokemon")
+                randNum = Math.floor(Math.random() * 86) +721;                 
+                playWord = util.pokemon[randNum]
+                console.log(playWord);
+                gameOn = true;
+     
+                 helperTopic = helperTopic + topics[9]+" (Alola)";
+            } else if (msg == prefix+'topic pokemon'){
+                console.log('Playing Compound Word')
+                playWord = getPlayWord(util.compoundWord, util.numComputers);
+                console.log(playWord);
+                gameOn = true;
+    
+                helperTopic = helperTopic + topics[8];
+            // Dynamic Topic
             }
         }
 
