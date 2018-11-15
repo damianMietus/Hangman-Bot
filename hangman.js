@@ -1,6 +1,6 @@
 const Discord = require('Discord.js');
 const bot = new Discord.Client();
-const TOKEN = 'Token goes here'
+const TOKEN = 'NTA3NzA1MjY2ODE3NzI4NTEz.DsJgPA.MU_j84vLLqg0vrx9jfJzgkTOX1o'
 const util = require('./util.json');
 
 var prefix = '!';
@@ -39,7 +39,7 @@ var hangASCII = [
 ]
 var healthCode = ["0022FF", "00EFFF", "2BFF00", "F7FF00", "FF7700", "FF0000", "000000"]
 
-console.log("I am on!");
+console.log("The bot is now online.");
 
 var bm ="";
 var correctAnswer = "";
@@ -92,7 +92,6 @@ bot.on('message', function(message) {
 
         // Check if it is alhpabetical, eight characaters long, is not !solve, and starts with prefix
         if (msg.includes("guess") && alphaCheck(msg.charAt(7)) !== null && msg.length === 8 && msg.charAt(0) === prefix && !msg.includes("!solve")){
-            console.log('Yup, its legal!');
             var guess = msg.charAt(7);
             //Check if duplicate
             var doubleFlag = checkIfGuessed(guessedList, guess);
@@ -166,7 +165,6 @@ bot.on('message', function(message) {
                             .setColor(healthCode[damage])
                         message.channel.sendEmbed(helperBoard);
 
-                        console.log('RESET THE GAME!');
                         resetGame();
                     } else {
                     // Not dead, print normal helper board
@@ -185,7 +183,6 @@ bot.on('message', function(message) {
                 var solv = msg.split("!solve ");
                 solv = solv + '';
                 solv = solv.split("'")[1];
-                console.log("Solv ="+solv);
 
                 alreadyGuessed = false;
 
@@ -199,7 +196,6 @@ bot.on('message', function(message) {
                 }
                 //Check if it was already guessed
                 for (c = 0; c < solvedList.length; c++){
-                    console.log("guesslist at c = "+solvedList[c])
                     if (solv == solvedList[c]){
                         alreadyGuessed = true;
                     }
@@ -220,8 +216,8 @@ bot.on('message', function(message) {
                             message.channel.sendEmbed(gameBoard);
     
                             helperBoard
-                                .setTitle("Conglaturation!")
-                                .setFooter("You're Winner!")
+                                .setTitle("Congratulations!")
+                                .setFooter("You Win!")
                                 .setColor(healthCode[damage])
                             message.channel.sendEmbed(helperBoard);
 
@@ -244,7 +240,7 @@ bot.on('message', function(message) {
                                 correctAnswer = "The correct answer was: "+playWord;
 
                                 helperBoard
-                                    .setTitle("You're Loser!")
+                                    .setTitle("You Lose!")
                                     .setFooter(correctAnswer)
                                     .setColor(healthCode[damage])
                                 message.channel.sendEmbed(helperBoard);
