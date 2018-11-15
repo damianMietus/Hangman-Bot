@@ -20,4 +20,8 @@ Guesses a letter in the game<br/>
 Attempts to end the game by solving the word<br/>
 
 # Screenshots
-![alt text](http://prntscr.com/livshv)
+<img alt="" src="screenshot1.png" />
+<img alt="" src="screenshot2.png" />
+
+# Author
+Created by Damian Mietus with JavaScript, Discord.js and Node.js
