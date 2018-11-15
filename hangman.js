@@ -1,6 +1,6 @@
 const Discord = require('Discord.js');
 const bot = new Discord.Client();
-const TOKEN = 'Token goes here'
+const TOKEN = 'Goes here'
 const util = require('./util.json');
 
 var prefix = '!';
@@ -59,6 +59,14 @@ var mainMenu = new Discord.RichEmbed()
     .setThumbnail("https://cdn3.iconfinder.com/data/icons/brain-games/128/Hangman-Game.png")
     .setColor('1BB2F3')
 
+var helpBoard = new Discord.RichEmbed()
+    .setTitle("Help")
+    .addField("!play", "Opens the topic menu")
+    .addField("!topic <number>", "Starts a game with the chosen topic")
+    .addField("!topic <category>", "Starts a game with the chosen dynamic topic")
+    .addField("!guess <letter>", "Guesses a letter in the game")
+    .addField("!solve '<string>'", "Attempts to end the game by solving the word")
+    .setColor('0022FF')
 
 bot.on('message', function(message) {
     var msg = message.content;
@@ -76,6 +84,10 @@ bot.on('message', function(message) {
                     msg.delete(8000)
                 })
         }
+    }
+
+    if (msg == prefix+'help'){
+        message.channel.sendEmbed(helpBoard)
     }
 
     //Take guesses here
