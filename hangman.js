@@ -1,6 +1,6 @@
 const Discord = require('Discord.js');
 const bot = new Discord.Client();
-const TOKEN = 'Goes here'
+const TOKEN = 'Token goes here'
 const util = require('./util.json');
 
 var prefix = '!';
@@ -12,7 +12,7 @@ var reaction_numbers = ["\u0030\u20E3","\u0031\u20E3","\u0032\u20E3","\u0033\u20
 var topics = ["", "Countries", "Capital Cities", "Food", "Movies", "Bands",
  "Animals", "Computers", "Compound Words", "Pokémon"];
 
-var botOn = false;
+//var botOn = false;
 var gameOn = false;
 var nonAlphaFlag = false;
 var randNum;
@@ -61,7 +61,6 @@ var mainMenu = new Discord.RichEmbed()
 
 var helpBoard = new Discord.RichEmbed()
     .setTitle("Help")
-    .addField("!play", "Opens the topic menu")
     .addField("!topic <number>", "Starts a game with the chosen topic")
     .addField("!topic <category>", "Starts a game with the chosen dynamic topic")
     .addField("!guess <letter>", "Guesses a letter in the game")
@@ -71,12 +70,10 @@ var helpBoard = new Discord.RichEmbed()
 bot.on('message', function(message) {
     var msg = message.content;
     msg = msg.toLowerCase();
-    //console.log(msg)
-    if (msg == prefix+'play'){
-        if (botOn === false){
+    if (msg == prefix+'topic'){
+        if (gameOn === false){
           //Display the topic menu
             message.channel.sendEmbed(mainMenu)
-            botOn = true;
         } else {
             bm = badManners();
             message.reply("The game is already on, "+bm)
@@ -93,8 +90,6 @@ bot.on('message', function(message) {
     //Take guesses here
     if (gameOn === true){
 
-       // console.log("msg is:"+msg.content+"| length: "+msg.length+"| charat(8): "+msg.charAt(7));
-
         // Check if it is alhpabetical, eight characaters long, is not !solve, and starts with prefix
         if (msg.includes("guess") && alphaCheck(msg.charAt(7)) !== null && msg.length === 8 && msg.charAt(0) === prefix && !msg.includes("!solve")){
             console.log('Yup, its legal!');
@@ -102,7 +97,6 @@ bot.on('message', function(message) {
             //Check if duplicate
             var doubleFlag = checkIfGuessed(guessedList, guess);
             if (doubleFlag === true){
-                //console.log('Already been guessed.');
                 bm = badManners();
                 message.reply("That has been guessed, "+bm)
                     .then(msg => {
@@ -130,15 +124,12 @@ bot.on('message', function(message) {
                         .setColor(healthCode[damage])
                     message.channel.sendEmbed(gameBoard);
 
-
-
                     //Check if winner
                     if (boardWord === playWord){
-                        //message.channel.send("Conglaturation, you're winner!");
 
                         helperBoard
-                            .setTitle("Conglaturation!")
-                            .setFooter("You're Winner!")
+                            .setTitle("Congratulations!")
+                            .setFooter("You Win!")
                             .setColor(healthCode[damage])
                         message.channel.sendEmbed(helperBoard);
 
@@ -164,14 +155,13 @@ bot.on('message', function(message) {
                         .setColor(healthCode[damage])
                     message.channel.sendEmbed(gameBoard);
 
-                    // If dead, print "You're Loser" screen and reset game
+                    // If dead, print the "You Lose" screen and reset game
                     if (damage === 6){
-                        //message.channel.send("You're Loser!");
 
                         correctAnswer = "The correct answer was: "+playWord;
 
                         helperBoard
-                            .setTitle("You're Loser!")
+                            .setTitle("You Lose!")
                             .setFooter(correctAnswer)
                             .setColor(healthCode[damage])
                         message.channel.sendEmbed(helperBoard);
@@ -186,13 +176,10 @@ bot.on('message', function(message) {
                         .setColor(healthCode[damage])
                     message.channel.sendEmbed(helperBoard);
                     }
-
                 }
-
             }
 
         } else if (msg.includes("solve") && msg.charAt(0) === prefix && msg.charAt(msg.length-1) == "'"){
-            console.log('This is a string solve. Here is msg: '+msg)
             //Make sure there are only two quotes in the solve string
             if (findTwoQuotes(msg) === true){
                 var solv = msg.split("!solve ");
@@ -210,8 +197,7 @@ bot.on('message', function(message) {
                         nonAlphaFlag = false;
                     }
                 }
-                
-                
+                //Check if it was already guessed
                 for (c = 0; c < solvedList.length; c++){
                     console.log("guesslist at c = "+solvedList[c])
                     if (solv == solvedList[c]){
@@ -223,10 +209,8 @@ bot.on('message', function(message) {
                     //Continue by checking length of solv + length of command + the two quotes
                     // This will make sure it only accepts valid input <!solve ''> this ahs 9 chars
                     if ((solv.length + 9) === msg.length){
-
                         //Check if winner
                         if (solv === playWord){
-                            //message.channel.send("Conglaturation, you're winner!");
                             boardWord = playWord;
 
                             gameBoard
@@ -265,8 +249,6 @@ bot.on('message', function(message) {
                                     .setColor(healthCode[damage])
                                 message.channel.sendEmbed(helperBoard);
 
-                                message.channel.send("You're Loser!");
-                                console.log('RESET THE GAME!');
                                 resetGame();
                             } else {
                             helperBoard
@@ -277,11 +259,6 @@ bot.on('message', function(message) {
                             }
                         }
                     }
-
-
-                    //console.log("stringLen = "+msg.length+"Its this string: "+msg);
-                    //console.log("SolvLen = "+solv.length);
-
                 } else {
                     //Invalid input: Already guessed
                     if (alreadyGuessed === true){
@@ -297,79 +274,73 @@ bot.on('message', function(message) {
                         .then(msg => {
                             msg.delete(8000)
                         })
-                    }
-                    
-                        
+                    }  
                 }
-
-
-
             } else {
                 //Invalid input: Unrecognized input
+                message.reply("Guesses should be alphabetical.")
+                //Check if Invalid Guess
+                if (msg.startsWith(prefix+"guess " && alphaCheck(msg.charAt(7)) != null) ){
+                    message.reply("Guesses should be alphabetical.")   
+                }
             }
-
-
-            
         }
-        
-
+        if (msg.startsWith(prefix+"guess ")  && (alphaCheck(msg.charAt(7)) == null || msg.length !== 8  )){
+            message.reply("Guesses should be a single alphabetical character.")   
+        }
     }
-
-
-
-
     // Topic selection check
-    if (botOn === true && gameOn === false){
-        if ((msg == prefix+'topic 1') || (msg == prefix+'topic one') || (msg == prefix+'topic '+reaction_numbers[1])){
+    if (/*botOn === true && */gameOn === false){
+        if ((msg == prefix+'topic 1') || (msg == prefix+'topic one') || (msg == prefix+'topic '+reaction_numbers[1]) || (msg == prefix+'topic countries')){
             console.log('Playing Countries')
             playWord = getPlayWord(util.country, util.numCountry);
             console.log(playWord);
             gameOn = true;
 
             helperTopic = helperTopic + topics[1];
-        } else if ((msg == prefix+'topic 2') || (msg == prefix+'topic two') || (msg == prefix+'topic '+reaction_numbers[2])){
+        } else if ((msg == prefix+'topic 2') || (msg == prefix+'topic two') || (msg == prefix+'topic '+reaction_numbers[2]) || (msg == prefix+'topic capital cities')){
             console.log('Playing Cities')
             playWord = getPlayWord(util.capitalcity, util.numCities);
             console.log(playWord);
             gameOn = true;
 
             helperTopic = helperTopic + topics[2];
-        } else if ((msg == prefix+'topic 3') || (msg == prefix+'topic three') || (msg == prefix+'topic '+reaction_numbers[3])){
+        } else if ((msg == prefix+'topic 3') || (msg == prefix+'topic three') || (msg == prefix+'topic '+reaction_numbers[3]) || (msg == prefix+'topic food')){
             console.log('Playing Foods')
             playWord = getPlayWord(util.food, util.numFoods);
             console.log(playWord);
             gameOn = true;
 
             helperTopic = helperTopic + topics[3];
-        } else if ((msg == prefix+'topic 4') || (msg == prefix+'topic four') || (msg == prefix+'topic '+reaction_numbers[4])){
+        } else if ((msg == prefix+'topic 4') || (msg == prefix+'topic four') || (msg == prefix+'topic '+reaction_numbers[4]) || (msg == prefix+'topic movies')){
             console.log('Playing Movies')
             playWord = getPlayWord(util.movie, util.numMovies);
             console.log(playWord);
             gameOn = true;
 
             helperTopic = helperTopic + topics[4];
-        } else if ((msg == prefix+'topic 5') || (msg == prefix+'topic five') || (msg == prefix+'topic '+reaction_numbers[5])){
+        } else if ((msg == prefix+'topic 5') || (msg == prefix+'topic five') || (msg == prefix+'topic '+reaction_numbers[5]) || (msg == prefix+'topic bands')){
             console.log('Playing Bands')
             playWord = getPlayWord(util.band, util.numBands);
             console.log(playWord);
             gameOn = true;
 
             helperTopic = helperTopic + topics[5];
-        } else if ((msg == prefix+'topic 6') || (msg == prefix+'topic six') || (msg == prefix+'topic '+reaction_numbers[6])){
+        } else if ((msg == prefix+'topic 6') || (msg == prefix+'topic six') || (msg == prefix+'topic '+reaction_numbers[6]) || (msg == prefix+'topic animals')){
             console.log('Playing Animals')
             playWord = getPlayWord(util.animal, util.numAnimals);
             console.log(playWord);
             gameOn = true;
 
             helperTopic = helperTopic + topics[6];
-        } else if ((msg == prefix+'topic 7') || (msg == prefix+'topic seven') || (msg == prefix+'topic '+reaction_numbers[7])){
+        } else if ((msg == prefix+'topic 7') || (msg == prefix+'topic seven') || (msg == prefix+'topic '+reaction_numbers[7]) || (msg == prefix+'topic computers')){
             console.log('Playing Computers')
             playWord = getPlayWord(util.computer, util.numComputers);
             console.log(playWord);
             gameOn = true;
 
             helperTopic = helperTopic + topics[7];
-        } else if ((msg == prefix+'topic 8') || (msg == prefix+'topic eight') || (msg == prefix+'topic '+reaction_numbers[8])){
+        } else if ((msg == prefix+'topic 8') || (msg == prefix+'topic eight') || (msg == prefix+'topic '+reaction_numbers[8]) || (msg == prefix+'topic compound words')){
             console.log('Playing Compound Word')
             playWord = getPlayWord(util.compoundWord, util.numComputers);
             console.log(playWord);
@@ -379,40 +350,40 @@ bot.on('message', function(message) {
         // Dynamic Topic
         } else if (msg.startsWith(prefix+"topic")){
             if ((msg == "!topic pokemon kanto") || (msg == "!topic kanto")){
-                 randNum = Math.floor(Math.random() * 151);
-                 playWord = util.pokemon[randNum]
-                 console.log(playWord);
-                 gameOn = true;
+                randNum = Math.floor(Math.random() * 151);
+                playWord = util.pokemon[randNum]
+                console.log(playWord);
+                gameOn = true;
      
-                 helperTopic = helperTopic + topics[9]+" (Kanto)";
+                helperTopic = helperTopic + topics[9]+" (Kanto)";
             } else if ((msg == "!topic pokemon johto") || (msg == "!topic johto")){
-                 randNum = Math.floor(Math.random() * 100) + 151;
-                 playWord = util.pokemon[randNum]
-                 console.log(playWord);
-                 gameOn = true;
+                randNum = Math.floor(Math.random() * 100) + 151;
+                playWord = util.pokemon[randNum]
+                console.log(playWord);
+                gameOn = true;
      
-                 helperTopic = helperTopic + topics[9]+" (Johto)";
+                helperTopic = helperTopic + topics[9]+" (Johto)";
             } else if ((msg == "!topic pokemon hoenn") || (msg == "!topic hoenn")){
                 randNum = Math.floor(Math.random() * 136) + 251;
                 playWord = util.pokemon[randNum]
-                 console.log(playWord);
-                 gameOn = true;
+                console.log(playWord);
+                gameOn = true;
      
-                 helperTopic = helperTopic + topics[9]+" (Hoenn)";
+                helperTopic = helperTopic + topics[9]+" (Hoenn)";
             } else if ((msg == "!topic pokemon sinnoh") || (msg == "!topic sinnoh")){
                  randNum = Math.floor(Math.random() * 107) + 386;
                  playWord = util.pokemon[randNum]
                  console.log(playWord);
                  gameOn = true;
      
-                 helperTopic = helperTopic + topics[9]+" (Sinnoh)";
+                helperTopic = helperTopic + topics[9]+" (Sinnoh)";
             } else if ((msg == "!topic pokemon unova") || (msg == "!topic unova")){
                 randNum = Math.floor(Math.random() * 156) + 492;                 
                 playWord = util.pokemon[randNum]
                 console.log(playWord);
                 gameOn = true;
      
-                 helperTopic = helperTopic + topics[9]+" (Unova)";
+                helperTopic = helperTopic + topics[9]+" (Unova)";
             } else if ((msg == "!topic pokemon kalos") || (msg == "!topic kalos")){
                 console.log(util.pokemon[720]+" and "+util.pokemon[721])
                 randNum = Math.floor(Math.random() * 72) +649;                 
@@ -420,7 +391,7 @@ bot.on('message', function(message) {
                 console.log(playWord);
                 gameOn = true;
      
-                 helperTopic = helperTopic + topics[9]+" (Kalos)";
+                helperTopic = helperTopic + topics[9]+" (Kalos)";
             } else if ((msg == "!topic pokemon alola") || (msg == "!topic alola")){
                 console.log(util.pokemon[806]+"Is pokemon")
                 randNum = Math.floor(Math.random() * 86) +721;                 
@@ -428,18 +399,15 @@ bot.on('message', function(message) {
                 console.log(playWord);
                 gameOn = true;
      
-                 helperTopic = helperTopic + topics[9]+" (Alola)";
+                helperTopic = helperTopic + topics[9]+" (Alola)";
             } else if (msg == prefix+'topic pokemon'){
-                console.log('Playing Compound Word')
-                playWord = getPlayWord(util.compoundWord, util.numComputers);
+                playWord = getPlayWord(util.pokemon, util.numPokemon);
                 console.log(playWord);
                 gameOn = true;
     
-                helperTopic = helperTopic + topics[8];
-            // Dynamic Topic
-            }
+                helperTopic = helperTopic + topics[9];
+            } 
         }
-
         //generate the board
         if (gameOn === true){
 
@@ -458,21 +426,9 @@ bot.on('message', function(message) {
             message.channel.sendEmbed(helperBoard);
         }
     }
-
-    
-
-
-    /* Command deleter
-    if (msg.charAt(0) === "!"){
-        message.delete(3000)
-        .catch();
-    }
-    */
 });
 
-
 bot.login(TOKEN);
-
 
 // Functions
 function getPlayWord(topic, numWords){
@@ -481,7 +437,7 @@ function getPlayWord(topic, numWords){
 }
 
 function resetGame(){
-    botOn = false;
+    //botOn = false;
     gameOn = false;
     playWord = "";
     boardWord = "";
@@ -501,7 +457,6 @@ function findTwoQuotes(string){
             quotesFound = quotesFound+1;
         }
     }
-
     if (quotesFound === 2){
         return true;
     } else {
@@ -514,6 +469,7 @@ function badManners(){
     var rand = Math.floor(Math.random() * 9);
     return badManner[rand];
 }
+
 //All functions below this comment were repurposed from my Oatmeal Bot
 function generateBoardWord(gameWord){
     var i;
