@@ -1,6 +1,6 @@
 const Discord = require('Discord.js');
 const bot = new Discord.Client();
-const TOKEN = 'NTA3NzA1MjY2ODE3NzI4NTEz.DsJgPA.MU_j84vLLqg0vrx9jfJzgkTOX1o'
+const TOKEN = 'Token goes here'
 const util = require('./util.json');
 
 var prefix = '!';
