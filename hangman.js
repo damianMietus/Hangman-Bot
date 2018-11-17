@@ -4,10 +4,6 @@ const TOKEN = 'Token goes here'
 const util = require('./util.json');
 
 var prefix = '!';
-/* Author: Varion
-*  https://github.com/discordjs/discord.js/issues/2287
-*  Special thanks to Varion for providing this list of unicode friendly number emojis */
-var reaction_numbers = ["\u0030\u20E3","\u0031\u20E3","\u0032\u20E3","\u0033\u20E3","\u0034\u20E3","\u0035\u20E3", "\u0036\u20E3","\u0037\u20E3","\u0038\u20E3","\u0039\u20E3"]
 
 var topics = ["", "Countries", "Capital Cities", "Food", "Movies", "Bands",
  "Animals", "Computers", "Compound Words", "Pokémon"];
@@ -40,6 +36,12 @@ var hangASCII = [
 var healthCode = ["0022FF", "00EFFF", "2BFF00", "F7FF00", "FF7700", "FF0000", "000000"]
 
 console.log("The bot is now online.");
+
+/*  Variable Author: Varion
+*  https://github.com/discordjs/discord.js/issues/2287
+*  Special thanks to Varion for providing this list of unicode friendly number emojis */
+var reaction_numbers = ["\u0030\u20E3","\u0031\u20E3","\u0032\u20E3","\u0033\u20E3","\u0034\u20E3","\u0035\u20E3", "\u0036\u20E3","\u0037\u20E3","\u0038\u20E3","\u0039\u20E3"]
+
 
 var bm ="";
 var correctAnswer = "";
