@@ -4,7 +4,7 @@ A Discord.js bot that allows server members to play hangman.
 # Features
 This program includes features such as:
 - 9 different vocabulary topics along with 7 subtopics
-- Over 7000 playable words in total
+- Over 5000 playable words in total
 - Allows input from multiple users for server-wide play
 
 # Commands
