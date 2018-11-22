@@ -1,0 +1,29 @@
+Special thanks to the following sources for providing Excel sheets of information
+for the following topics used:
+
+Countries:
+http://www.countries-list.info/Download-List
+
+Capital Cities:
+http://textlists.info/geography/countries-and-capitals-of-the-world/
+
+Food:
+https://www.enchantedlearning.com/wordlist/food.shtml
+
+Movies: 
+https://www.exceldashboardtemplates.com/IMDB-Top-250-Data-Set.xls
+
+Bands:
+http://answers.google.com/answers/threadview/id/598360.html
+
+Animals:
+https://www.enchantedlearning.com/wordlist/animal.shtml
+
+Computers:
+https://www.enchantedlearning.com/wordlist/computer.shtml
+
+Compound Words:
+https://www.enchantedlearning.com/wordlist/compoundwords.shtml
+
+Pokemon:
+https://docs.google.com/spreadsheets/d/1MGcNBb8irm98M9_q2Jxg_NG9nY7rB0FG4CXeTK8g2H0/edit#gid=0
